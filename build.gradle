@@ -5,6 +5,7 @@ file('build.properties').withReader {
 }
 
 apply plugin: 'java'
+apply plugin: 'scala'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'maven'
@@ -21,6 +22,12 @@ dependencies {
     compile([group: 'org.scala-lang', name: 'scala-library', version: config.version_scala],
             [group: 'com.typesafe.akka', name: 'akka-actor_2.11', version: config.version_akka],
 			[group: 'org.ow2.asm', name: 'asm', version: config.version_asm])
+}
+
+jar {
+    manifest {
+        if (!config.mainClass.isEmpty()) attributes "Main-Class": config.mainClass
+    }
 }
 
 task testJar(type: Jar, dependsOn: javadoc) {

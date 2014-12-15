@@ -1,10 +1,8 @@
 package org.lolhens.asmpatcher
 
-import java.util
 import org.lolhens.asmpatcher.Opcode._
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.AbstractInsnNode
-import scala.collection.JavaConversions._
 
 /**
  * Created by LolHens on 14.12.2014.
@@ -12,13 +10,21 @@ import scala.collection.JavaConversions._
 class Opcode(val name: String,
              val opcode: Int,
              val optype: Int) {
-  opcodes += name -> this
+  opcodes(opcode) = this
 
   override def toString = name
 }
 
 object Opcode {
-  val opcodes = new util.HashMap[String, Opcode]()
+  private val opcodes = new Array[Opcode](255)
+
+  def apply(opcode: Int): Opcode = opcodes(opcode)
+
+  def apply(name: String): Opcode = {
+    val opName = name.toLowerCase
+    for (opcode <- opcodes) if (opcode.name == opName) return opcode
+    null
+  }
 
   val NOP = new Opcode("nop", Opcodes.NOP, AbstractInsnNode.INSN)
   val ACONST_NULL = new Opcode("aconst_null", Opcodes.ACONST_NULL, AbstractInsnNode.INSN)

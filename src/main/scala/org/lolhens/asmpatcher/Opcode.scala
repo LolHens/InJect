@@ -2,7 +2,7 @@ package org.lolhens.asmpatcher
 
 import org.lolhens.asmpatcher.Opcode._
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.tree.AbstractInsnNode
+import org.objectweb.asm.tree._
 
 /**
  * Created by LolHens on 14.12.2014.
@@ -13,6 +13,34 @@ class Opcode(val name: String,
   opcodes(opcode) = this
 
   override def toString = name
+
+  def toInsn(args: String*): AbstractInsnNode = optype match {
+    case AbstractInsnNode.INSN => new InsnNode(opcode)
+    case AbstractInsnNode.INT_INSN => new IntInsnNode(opcode, args(0).toInt)
+    case AbstractInsnNode.VAR_INSN => new VarInsnNode(opcode, args(0).toInt)
+    case AbstractInsnNode.TYPE_INSN => ???
+    case AbstractInsnNode.FIELD_INSN => ???
+    case AbstractInsnNode.METHOD_INSN => ???
+    case AbstractInsnNode.INVOKE_DYNAMIC_INSN =>
+      throw new Exception("Found INVOKEDYNAMIC while reading");
+    case AbstractInsnNode.JUMP_INSN => new JumpInsnNode(opcode, null) // args(0)
+    case AbstractInsnNode.LDC_INSN => args(0) match {
+      case cst if (cst == "*") => new LdcInsnNode(null)
+      case cst if (cst.endsWith("\"")) => new LdcInsnNode(cst.substring(1, cst.length() - 1))
+      case cst if (cst.endsWith("L")) => new LdcInsnNode(cst.substring(1, cst.length() - 1).toLong)
+      case cst if (cst.endsWith("F")) => new LdcInsnNode(cst.substring(1, cst.length() - 1).toFloat)
+      case cst if (cst.endsWith("D")) => new LdcInsnNode(cst.substring(1, cst.length() - 1).toDouble)
+      case cst if (cst.contains(".")) => new LdcInsnNode(cst.toDouble)
+      case cst => new LdcInsnNode(cst.toInt)
+    }
+    case AbstractInsnNode.IINC_INSN => new IincInsnNode(opcode, args(0).toInt)
+    case AbstractInsnNode.LABEL => throw new Exception("Use L# for labels")
+    case AbstractInsnNode.TABLESWITCH_INSN => ???
+    case AbstractInsnNode.LOOKUPSWITCH_INSN => throw new Exception("I don't know how to deal with this insn type")
+    case AbstractInsnNode.MULTIANEWARRAY_INSN => new MultiANewArrayInsnNode(args(0), args(1).toInt);
+    case AbstractInsnNode.FRAME => throw new Exception("Use ClassWriter.COMPUTE_FRAMES");
+    case _ => null
+  }
 }
 
 object Opcode {

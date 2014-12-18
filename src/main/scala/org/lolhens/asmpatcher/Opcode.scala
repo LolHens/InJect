@@ -1,8 +1,12 @@
 package org.lolhens.asmpatcher
 
+import java.util
+
 import org.lolhens.asmpatcher.Opcode._
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree._
+
+import scala.collection.JavaConversions._
 
 /**
  * Created by LolHens on 14.12.2014.
@@ -10,13 +14,13 @@ import org.objectweb.asm.tree._
 class Opcode(val name: String,
              val opcode: Int,
              val optype: Int) {
-  opcodes(opcode) = this
+  opcodes.add(this)
 
   override def toString = name
 }
 
 object Opcode {
-  private val opcodes = new Array[Opcode](255)
+  private val opcodes = new util.ArrayList[Opcode]()
 
   private def apply(name: String, opcode: Int, optype: Int): Opcode = new Opcode(name, opcode, optype)
 
@@ -226,11 +230,16 @@ object Opcode {
   //val IMPDEP1 = Opcode("impdep1", 254)
   //val IMPDEP2 = Opcode("impdep2", 255)
 
-  def apply(opcode: Int): Opcode = opcodes(opcode)
+  val LABEL = new Opcode("l", -1, AbstractInsnNode.LABEL)
+
+  def apply(opcode: Int): Opcode = {
+    for (op <- opcodes) if (op.opcode == opcode) return op
+    null
+  }
 
   def apply(name: String): Opcode = {
     val opName = name.toLowerCase
-    for (opcode <- opcodes) if (opcode.name == opName) return opcode
+    for (opcode <- opcodes) if (opName.startsWith(opcode.name)) return opcode
     null
   }
 }

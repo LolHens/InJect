@@ -13,33 +13,6 @@ class Opcode(val name: String,
   opcodes(opcode) = this
 
   override def toString = name
-
-  def toInsn(arg: String): AbstractInsnNode = optype match {
-    case AbstractInsnNode.INSN => new InsnNode(opcode)
-    case AbstractInsnNode.INT_INSN => new IntInsnNode(opcode, arg(0).toInt)
-    case AbstractInsnNode.VAR_INSN => new VarInsnNode(opcode, arg(0).toInt)
-    case AbstractInsnNode.TYPE_INSN => ??? //TODO
-    case AbstractInsnNode.FIELD_INSN => ??? //TODO
-    case AbstractInsnNode.METHOD_INSN => ??? //TODO
-    case AbstractInsnNode.INVOKE_DYNAMIC_INSN => ???
-    case AbstractInsnNode.JUMP_INSN => new JumpInsnNode(opcode, null) //TODO LABEL!
-    case AbstractInsnNode.LDC_INSN => arg match {
-      case _ if (arg == "*") => new LdcInsnNode(null)
-      case _ if (arg.endsWith("\"")) => new LdcInsnNode(arg.drop(1).dropRight(1))
-      case _ if (arg.endsWith("L")) => new LdcInsnNode(arg.dropRight(1).toLong)
-      case _ if (arg.endsWith("F")) => new LdcInsnNode(arg.dropRight(1).toFloat)
-      case _ if (arg.endsWith("D")) => new LdcInsnNode(arg.dropRight(1).toDouble)
-      case _ if (arg.contains(".")) => new LdcInsnNode(arg.toDouble)
-      case _ => new LdcInsnNode(arg.toInt)
-    }
-    case AbstractInsnNode.IINC_INSN => new IincInsnNode(opcode, arg.toInt)
-    case AbstractInsnNode.LABEL => ???
-    case AbstractInsnNode.TABLESWITCH_INSN => ???
-    case AbstractInsnNode.LOOKUPSWITCH_INSN => throw new Exception("I don't know how to deal with this insn type")
-    case AbstractInsnNode.MULTIANEWARRAY_INSN => new MultiANewArrayInsnNode(arg, "secondarg".toInt);
-    case AbstractInsnNode.FRAME => ???
-    case _ => null
-  }
 }
 
 object Opcode {

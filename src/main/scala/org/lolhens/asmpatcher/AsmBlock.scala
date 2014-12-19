@@ -77,9 +77,13 @@ class AsmBlock {
     }
   }
 
+  def t = {
+    val methodWriter = new MethodWriter(null, Opcodes.ACC_PUBLIC, "t", "()V", "", new Array[String](0), true, true)
+  }
+
   override def toString = {
     var string = ""
-    for (insn: AbstractInsnNode <- insnList) string += insn.toString + "\n"
+    for (insn: AbstractInsnNode <- insnList) string += insn.accept(new MethodVisitor() {}) + "\n"
     string.dropRight(1)
   }
 }

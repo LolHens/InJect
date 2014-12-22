@@ -5,6 +5,7 @@ import java.util
 import org.lolhens.asmpatcher.AsmBlock._
 import org.objectweb.asm._
 import org.objectweb.asm.tree._
+import org.objectweb.asm.util._
 
 import scala.collection.JavaConversions._
 
@@ -12,19 +13,24 @@ import scala.collection.JavaConversions._
  * Created by LolHens on 18.12.2014.
  */
 class AsmBlock {
-  val insnList = new util.LinkedList[AbstractInsnNode]()
+  val insnList = new InsnList()
   val labelMap = new util.HashMap[Int, LabelNode]()
 
-  private def insert(index: Int, insnNode: AbstractInsnNode): Unit = {
-    insnList.add(index, insnNode)
-  }
+  def add(insn: String): Unit = insert(insnList.size, insn)
 
   def insert(index: Int, insn: String): Unit = {
-    val opcode = Opcode(insn)
-    if (opcode != null) insert(index, toInsn(opcode, insn))
+    val insnNode = toInsn(insn);
+    if (insnNode != null) insert(index, insnNode)
   }
 
-  def label(num: Int): LabelNode = {
+  private def insert(index: Int, insnNode: AbstractInsnNode): Unit = {
+    if (index == 0)
+      insnList.insert(insnNode)
+    else
+      insnList.insert(insnList.get(index - 1), insnNode)
+  }
+
+  private def label(num: Int): LabelNode = {
     if (labelMap.containsKey(num)) return labelMap.get(num)
     val newLabel = new LabelNode(new Label())
     labelMap.put(num, newLabel)
@@ -38,7 +44,15 @@ class AsmBlock {
       null
   }
 
-  def toInsn(opcode: Opcode, insn: String): AbstractInsnNode = {
+  def toInsn(insn: String): AbstractInsnNode = {
+    val opcode = Opcode(insn)
+    if (opcode != null)
+      toInsn(opcode, insn)
+    else
+      null
+  }
+
+  private def toInsn(opcode: Opcode, insn: String): AbstractInsnNode = {
     val insnParts = insn.split(" ")
     opcode.optype match {
       case AbstractInsnNode.INSN => new InsnNode(opcode.opcode)
@@ -77,21 +91,25 @@ class AsmBlock {
     }
   }
 
-  def t = {
-    val methodWriter = new MethodWriter(null, Opcodes.ACC_PUBLIC, "t", "()V", "", new Array[String](0), true, true)
-  }
-
   override def toString = {
-    var string = ""
-    for (insn: AbstractInsnNode <- insnList) string += insn.accept(new MethodVisitor() {}) + "\n"
-    string.dropRight(1)
+    val printer = new Textifier()
+
+    val traceMethodVisitor = new TraceMethodVisitor(printer)
+
+    val methodNode = new MethodNode()
+    methodNode.instructions = insnList
+    methodNode.accept(traceMethodVisitor)
+
+    var ret = ""
+    for (text <- printer.text) ret += text
+    ret
   }
 }
 
 object AsmBlock {
   private def fromLdcArg(arg: String): Any = arg.toLowerCase match {
     case arg if (arg == "*") => null
-    case arg if (arg.endsWith("\"")) => arg.drop(1).dropRight(1)
+    case arg if (arg.startsWith("\"") && arg.endsWith("\"")) => arg.drop(1).dropRight(1)
     case arg if (arg.endsWith("l")) => arg.dropRight(1).toLong
     case arg if (arg.endsWith("f")) => arg.dropRight(1).toFloat
     case arg if (arg.endsWith("d")) => arg.dropRight(1).toDouble

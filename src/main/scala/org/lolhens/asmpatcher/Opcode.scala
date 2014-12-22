@@ -13,7 +13,8 @@ import scala.collection.JavaConversions._
  */
 class Opcode(val name: String,
              val opcode: Int,
-             val optype: Int) {
+             val optype: Int,
+             val label: Boolean = false) {
   opcodes.add(this)
 
   override def toString = name
@@ -23,6 +24,8 @@ object Opcode {
   private val opcodes = new util.ArrayList[Opcode]()
 
   private def apply(name: String, opcode: Int, optype: Int): Opcode = new Opcode(name, opcode, optype)
+
+  val LABEL = new Opcode("label", -1, AbstractInsnNode.LABEL, true)
 
   val NOP = Opcode("nop", Opcodes.NOP, AbstractInsnNode.INSN)
   val ACONST_NULL = Opcode("aconst_null", Opcodes.ACONST_NULL, AbstractInsnNode.INSN)
@@ -230,8 +233,6 @@ object Opcode {
   //val IMPDEP1 = Opcode("impdep1", 254)
   //val IMPDEP2 = Opcode("impdep2", 255)
 
-  val LABEL = new Opcode("l", -1, AbstractInsnNode.LABEL)
-
   def apply(opcode: Int): Opcode = {
     for (op <- opcodes) if (op.opcode == opcode) return op
     null
@@ -239,7 +240,12 @@ object Opcode {
 
   def apply(name: String): Opcode = {
     val opName = name.toLowerCase
-    for (opcode <- opcodes) if (opName.startsWith(opcode.name)) return opcode
+    for (opcode <- opcodes)
+      if (opcode.label) {
+        if (opName.startsWith("l") && opName.drop(1).matches("-?\\d+")) return opcode
+      } else {
+        if (opName.startsWith(opcode.name)) return opcode
+      }
     null
   }
 }

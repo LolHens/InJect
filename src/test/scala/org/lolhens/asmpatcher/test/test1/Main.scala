@@ -1,13 +1,13 @@
 package org.lolhens.asmpatcher.test.test1
 
-import org.lolhens.asmpatcher.AsmBlock
+import org.lolhens.asmpatcher.AsmBlockReader
 
 /**
  * Created by LolHens on 17.12.2014.
  */
 object Main {
   def main(args: Array[String]): Unit = {
-    val asmBlock = new AsmBlock()
+    val asmBlock = new AsmBlockReader()
 
     asmBlock.add("L0")
     asmBlock.add("LDC \"abc\"")

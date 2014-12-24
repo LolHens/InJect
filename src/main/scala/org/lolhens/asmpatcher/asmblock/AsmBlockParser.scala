@@ -1,6 +1,7 @@
-package org.lolhens.asmpatcher
+package org.lolhens.asmpatcher.asmblock
 
-import org.lolhens.asmpatcher.AsmBlockParser._
+import org.lolhens.asmpatcher.Opcode
+import org.lolhens.asmpatcher.asmblock.AsmBlockParser._
 import org.objectweb.asm.tree._
 
 /**
@@ -41,7 +42,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
       case AbstractInsnNode.JUMP_INSN => new JumpInsnNode(opcode.opcode, parseLabel(args(0)))
       case AbstractInsnNode.LDC_INSN => new LdcInsnNode(castLdcArg(args(0)))
       case AbstractInsnNode.IINC_INSN => new IincInsnNode(opcode.opcode, args(0).toInt)
-      case AbstractInsnNode.LABEL => parseLabel(args(0))
+      case AbstractInsnNode.LABEL => parseLabel(args(0)) //unused
       case AbstractInsnNode.TABLESWITCH_INSN => new TableSwitchInsnNode(args(0).toInt, args(1).toInt, parseLabel(args(args.length - 1)), {
         val labels = new Array[LabelNode](args.length - 2)
         for (i <- 0 until labels.length - 1) labels(i) = parseLabel(args(i + 2))
@@ -59,8 +60,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
         new LookupSwitchInsnNode(default, keys, labels)
       }
       case AbstractInsnNode.MULTIANEWARRAY_INSN => new MultiANewArrayInsnNode(args(0), args(1).toInt)
-      case AbstractInsnNode.FRAME => ???
-      case _ => null
+      case AbstractInsnNode.FRAME => ??? //unused
     }
   }
 }

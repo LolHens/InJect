@@ -1,4 +1,4 @@
-package org.lolhens.asmpatcher
+package org.lolhens.asmpatcher.asmblock
 
 import java.util
 

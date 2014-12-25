@@ -18,7 +18,10 @@ class Opcode(val name: String,
 
   val numArgs = optype match {
     case AbstractInsnNode.INSN => 0
-    // TODO
+    case AbstractInsnNode.INT_INSN => 1
+    case AbstractInsnNode.VAR_INSN => 1
+    case AbstractInsnNode.TYPE_INSN => 1
+    //TODO (will probably be removed)
   }
 
   override def toString = name

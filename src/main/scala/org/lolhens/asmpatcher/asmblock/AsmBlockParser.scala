@@ -11,11 +11,10 @@ import scala.collection.JavaConversions._
  * Created by LolHens on 23.12.2014.
  */
 class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
-  def parseInsn(_insn: String): AbstractInsnNode = {
-    val insn = _insn.toLowerCase
-
-    val opcode = Opcode(insn)
-    if (opcode != null) return parseRawInsnArgs(opcode, insn.split(" ", 2)(1))
+  def parseInsn(insn: String): AbstractInsnNode = {
+    val opcode_args = insn.split(" ", 2)
+    val opcode = Opcode(opcode_args(0))
+    if (opcode != null) return parseInsnArgs(opcode, opcode_args(1))
 
     val labelNode = parseLabel(insn)
     if (labelNode != null) return labelNode
@@ -30,26 +29,26 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
       null
   }
 
-  def parseRawInsnArgs(opcode: Opcode, _args: String): AbstractInsnNode = {
-    val args = _args.toLowerCase
+  def parseInsnArgs(opcode: Opcode, _args: String): AbstractInsnNode = {
+    val args = _args
+      .trim
+      .replaceAll("\r\n|\r|\n|:", " ")
+      .replaceAll(" +", " ")
+      .toLowerCase
+
     val split = args.split(" ")
 
     opcode.optype match {
-      case AbstractInsnNode.FIELD_INSN => {
-        parseInsnArgs(opcode, ???) // TODO
+      case AbstractInsnNode.FIELD_INSN | AbstractInsnNode.METHOD_INSN => {
+        val owner_name = split(0).split("\\.")
+        val desc = split(1)
+        parseSeparatedInsnArgs(opcode, Array(owner_name(0), owner_name(1), desc))
       }
-      case AbstractInsnNode.METHOD_INSN => {
-        val split2 = split(0).split("\\.")
-        parseInsnArgs(opcode, Array(split2(0), split2(1), split(1)))
-      }
-      case AbstractInsnNode.TABLESWITCH_INSN | AbstractInsnNode.LOOKUPSWITCH_INSN => {
-        parseInsnArgs(opcode, ???) // TODO
-      }
-      case _ => parseInsnArgs(opcode, split)
+      case _ => parseSeparatedInsnArgs(opcode, split)
     }
   }
 
-  def parseInsnArgs(opcode: Opcode, args: Array[String]): AbstractInsnNode = {
+  def parseSeparatedInsnArgs(opcode: Opcode, args: Array[String]): AbstractInsnNode = {
     opcode.optype match {
       case AbstractInsnNode.INSN => new InsnNode(opcode.opcode)
       case AbstractInsnNode.INT_INSN => new IntInsnNode(opcode.opcode, args(0).toInt)
@@ -100,18 +99,21 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     val labels = new util.HashMap[Int, LabelNode]()
     var default: LabelNode = null
 
-    for (i <- 0 until args.length - 1 by 2) args(i).trim match {
-      case "default" => default = parseLabel(args(i + 1))
-      case value if (value.matches("-?\\d+")) => labels.put(value.toInt, parseLabel(args(i + 1)))
+    var i = 0
+    while (default == null) {
+      if (i + 1 >= args.length) throw new IllegalArgumentException("Missing default label!")
+      args(i) match {
+        case "default" => default = parseLabel(args(i + 1))
+        case value if (value.matches("-?\\d+")) => labels.put(value.toInt, parseLabel(args(i + 1)))
+      }
+      i += 2
     }
-    if (default == null) throw new IllegalArgumentException("Missing default label!")
-
     (labels, default)
   }
 }
 
 object AsmBlockParser {
-  private def castLdcArg(arg: String): Any = arg.trim.toLowerCase match {
+  private def castLdcArg(arg: String): Any = arg.toLowerCase match {
     case arg @ "*" => null
     case arg if (arg.startsWith("\"") && arg.endsWith("\"")) => arg.drop(1).dropRight(1)
     case arg if (arg.endsWith("l")) => arg.dropRight(1).toLong
@@ -119,5 +121,11 @@ object AsmBlockParser {
     case arg if (arg.endsWith("d")) => arg.dropRight(1).toDouble
     case arg if (arg.contains(".")) => arg.toDouble
     case arg => arg.toInt
+  }
+
+  def numArgs(insnNode: AbstractInsnNode, args: String) = insnNode.getOpcode match {
+    case AbstractInsnNode.INSN => 0
+    case AbstractInsnNode.INT_INSN | AbstractInsnNode.VAR_INSN | AbstractInsnNode.TYPE_INSN => 1
+    //TODO!
   }
 }

@@ -16,14 +16,6 @@ class Opcode(val name: String,
              val optype: Int) {
   opcodes.add(this)
 
-  val numArgs = optype match {
-    case AbstractInsnNode.INSN => 0
-    case AbstractInsnNode.INT_INSN => 1
-    case AbstractInsnNode.VAR_INSN => 1
-    case AbstractInsnNode.TYPE_INSN => 1
-    //TODO (will probably be removed)
-  }
-
   override def toString = name
 }
 
@@ -245,7 +237,7 @@ object Opcode {
 
   def apply(name: String): Opcode = {
     val opName = name.toLowerCase
-    for (opcode <- opcodes) if (opName.startsWith(opcode.name)) return opcode
+    for (opcode <- opcodes) if (opName == opcode.name) return opcode
     null
   }
 }

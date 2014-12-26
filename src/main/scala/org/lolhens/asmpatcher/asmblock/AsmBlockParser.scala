@@ -31,8 +31,9 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
 
   def parseInsnArgs(opcode: Opcode, _args: String): AbstractInsnNode = {
     val args = _args
+      .replaceAll("\r\n|\r|\n", " ")
+      .replaceAll(":", "")
       .trim
-      .replaceAll("\r\n|\r|\n|:", " ")
       .replaceAll(" +", " ")
       .toLowerCase
 

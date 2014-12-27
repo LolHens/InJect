@@ -17,6 +17,9 @@ import scala.collection.JavaConversions._
 class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
   private val strings = new util.ArrayList[String]()
 
+  /*
+  Seperates the instructions and parses them
+   */
   def parseInsns(_asm: String): util.List[AbstractInsnNode] = {
     var asm = reformatAsm(_asm)
     val ret = new util.ArrayList[AbstractInsnNode]()
@@ -33,6 +36,9 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     ret
   }
 
+  /*
+  Parses the first instruction in an asm block
+   */
   def parseInsn(_insn: String): AbstractInsnNode = {
     val insn = reformatAsm(_insn)
 
@@ -46,6 +52,9 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     null
   }
 
+  /*
+  Parses a label
+   */
   private def parseLabel(arg: String): LabelNode = {
     if (arg.toLowerCase.startsWith("l") && arg.drop(1).matches("-?\\d+"))
       asmBlock.label(arg.drop(1).toInt)
@@ -53,6 +62,9 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
       null
   }
 
+  /*
+  Seperates the arguments and parses the instruction
+   */
   private def parseInsnArgs(opcode: Opcode, args: String): AbstractInsnNode = {
     val split = args.split(" ")
 
@@ -67,6 +79,9 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     }
   }
 
+  /*
+  Parses the already seperated arguments for an instruction
+   */
   private def parseSeparatedInsnArgs(opcode: Opcode, args: Array[String]): AbstractInsnNode = {
     opcode.optype match {
       case AbstractInsnNode.INSN => new InsnNode(opcode.opcode)
@@ -120,6 +135,9 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     }
   }
 
+  /*
+  Parses an ldc argument into the right class
+   */
   private def castLdcArg(arg: String): Any = arg.toLowerCase match {
     case arg @ "*" => null
     case arg if (arg.startsWith("\"") && arg.endsWith("\"")) => arg.drop(1).dropRight(1) //unused (use string map)
@@ -131,6 +149,9 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     case arg => println(arg) //arg.toInt
   }
 
+  /*
+  Parses a switch instruction
+   */
   private def parseSwitchInsn(args: Array[String]): (util.Map[Int, LabelNode], LabelNode) = {
     val labels = new util.HashMap[Int, LabelNode]()
     var default: LabelNode = null
@@ -147,6 +168,9 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     (labels, default)
   }
 
+  /*
+  Cleans up the input strings and puts strings into the internal string list
+   */
   private def reformatAsm(_args: String): String = {
     var args = _args
     while (args.contains("\"")) {
@@ -165,6 +189,9 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
       .replaceAll(" +", " ")
   }
 
+  /*
+  Number of arguments an instruction has
+   */
   def numArgs(insn: Int, _args: String): Int = {
     val args = reformatAsm(_args)
     val split = args.split(" ")
@@ -198,6 +225,9 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
 }
 
 object AsmBlockParser {
+  /*
+  Like javas String.split but the array will always have the size of limit
+   */
   private def forceSplit(string: String, regex: String, limit: Int): Array[String] = {
     val split = string.split(regex, limit)
     if (split.length < limit) {
@@ -209,6 +239,9 @@ object AsmBlockParser {
     }
   }
 
+  /*
+  Parses an asm block
+   */
   def parseAsmBlock(asm: String) = {
     val parser = new AsmBlockParser()
     val insns = parser.parseInsns(asm)

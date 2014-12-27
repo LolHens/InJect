@@ -24,6 +24,8 @@ object Opcode {
 
   private def apply(name: String, opcode: Int, optype: Int): Opcode = new Opcode(name, opcode, optype)
 
+  val LABEL = Opcode("label", -1, AbstractInsnNode.LABEL)
+
   val NOP = Opcode("nop", Opcodes.NOP, AbstractInsnNode.INSN)
   val ACONST_NULL = Opcode("aconst_null", Opcodes.ACONST_NULL, AbstractInsnNode.INSN)
   val ICONST_M1 = Opcode("iconst_m1", Opcodes.ICONST_M1, AbstractInsnNode.INSN)

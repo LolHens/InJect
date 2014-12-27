@@ -22,6 +22,8 @@ class AsmBlock {
       insnList.insert(insnList.get(index - 1), insnNode)
   }
 
+  def add(insnNode: AbstractInsnNode): Unit = insert(insnList.size(), insnNode)
+
   def label(num: Int): LabelNode = {
     if (labelMap.containsKey(num)) return labelMap.get(num)
     val newLabel = new LabelNode(new Label())

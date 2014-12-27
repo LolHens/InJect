@@ -15,6 +15,8 @@ import scala.collection.JavaConversions._
  * Created by LolHens on 23.12.2014.
  */
 class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
+  private val strings = new util.ArrayList[String]()
+
   def parseInsns(_asm: String): util.List[AbstractInsnNode] = {
     var asm = reformatAsm(_asm)
     val ret = new util.ArrayList[AbstractInsnNode]()
@@ -118,6 +120,17 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     }
   }
 
+  private def castLdcArg(arg: String): Any = arg.toLowerCase match {
+    case arg @ "*" => null
+    case arg if (arg.startsWith("\"") && arg.endsWith("\"")) => arg.drop(1).dropRight(1) //unused (use string map)
+    case arg if (arg.endsWith("s")) => strings.get(arg.dropRight(1).toInt)
+    case arg if (arg.endsWith("l")) => arg.dropRight(1).toLong
+    case arg if (arg.endsWith("f")) => arg.dropRight(1).toFloat
+    case arg if (arg.endsWith("d")) => arg.dropRight(1).toDouble
+    case arg if (arg.contains(".")) => arg.toDouble
+    case arg => println(arg) //arg.toInt
+  }
+
   private def parseSwitchInsn(args: Array[String]): (util.Map[Int, LabelNode], LabelNode) = {
     val labels = new util.HashMap[Int, LabelNode]()
     var default: LabelNode = null
@@ -133,31 +146,17 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     }
     (labels, default)
   }
-}
 
-object AsmBlockParser {
-  private def forceSplit(string: String, regex: String, limit: Int): Array[String] = {
-    val split = string.split(regex, limit)
-    if (split.length < limit) {
-      val newSplit = new Array[String](limit)
-      for (i <- 0 until newSplit.length) newSplit(i) = if (i < split.length) split(i) else ""
-      newSplit
-    } else {
-      split
+  private def reformatAsm(_args: String): String = {
+    var args = _args
+    while (args.contains("\"")) {
+      val start = args.indexOf("\"")
+      val end = args.indexOf("\"", start + 1)
+      if (end == -1) throw new IllegalArgumentException(s"Incomplete string: $args")
+      val index = strings.size()
+      strings.add(args.substring(start + 1, end))
+      args = s"${args.substring(0, start)}${index}s${args.substring(end + 1)}"
     }
-  }
-
-  private def castLdcArg(arg: String): Any = arg.toLowerCase match {
-    case arg @ "*" => null
-    case arg if (arg.startsWith("\"") && arg.endsWith("\"")) => arg.drop(1).dropRight(1)
-    case arg if (arg.endsWith("l")) => arg.dropRight(1).toLong
-    case arg if (arg.endsWith("f")) => arg.dropRight(1).toFloat
-    case arg if (arg.endsWith("d")) => arg.dropRight(1).toDouble
-    case arg if (arg.contains(".")) => arg.toDouble
-    case arg => arg.toInt
-  }
-
-  private def reformatAsm(args: String): String = {
     args
       .replaceAll("\r\n|\r|\n", " ")
       .replaceAll(":", " ")
@@ -194,6 +193,19 @@ object AsmBlockParser {
         }
         throw new IllegalArgumentException(s"Missing default label: $args")
       }
+    }
+  }
+}
+
+object AsmBlockParser {
+  private def forceSplit(string: String, regex: String, limit: Int): Array[String] = {
+    val split = string.split(regex, limit)
+    if (split.length < limit) {
+      val newSplit = new Array[String](limit)
+      for (i <- 0 until newSplit.length) newSplit(i) = if (i < split.length) split(i) else ""
+      newSplit
+    } else {
+      split
     }
   }
 

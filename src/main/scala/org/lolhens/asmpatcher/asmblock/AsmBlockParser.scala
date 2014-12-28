@@ -18,7 +18,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
   private val strings = new util.ArrayList[String]()
 
   /*
-  Seperates the instructions and parses them
+  Separates the instructions and parses them
    */
   def parseInsns(_asm: String): util.List[AbstractInsnNode] = {
     var asm = reformatAsm(_asm)
@@ -26,7 +26,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
 
     while (asm != "") {
       val insnNode = parseInsn(asm)
-      if (insnNode == null) throw new IllegalArgumentException(s"Unable to parse intruction: $asm")
+      if (insnNode == null) throw new IllegalArgumentException(s"Unable to parse instruction: $asm")
       ret.add(insnNode)
 
       val opcode_other = forceSplit(asm, " ", 2)
@@ -63,24 +63,23 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
   }
 
   /*
-  Seperates the arguments and parses the instruction
+  Separates the arguments and parses the instruction
    */
   private def parseInsnArgs(opcode: Opcode, args: String): AbstractInsnNode = {
     val split = args.split(" ")
 
     opcode.optype match {
       case AbstractInsnNode.FIELD_INSN
-           | AbstractInsnNode.METHOD_INSN => {
+           | AbstractInsnNode.METHOD_INSN =>
         val owner_name = split(0).split("\\.")
         val desc = split(1)
         parseSeparatedInsnArgs(opcode, Array(owner_name(0), owner_name(1), desc))
-      }
       case _ => parseSeparatedInsnArgs(opcode, split)
     }
   }
 
   /*
-  Parses the already seperated arguments for an instruction
+  Parses the already separated arguments for an instruction
    */
   private def parseSeparatedInsnArgs(opcode: Opcode, args: Array[String]): AbstractInsnNode = {
     opcode.optype match {
@@ -95,7 +94,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
       case AbstractInsnNode.LDC_INSN => new LdcInsnNode(castLdcArg(args(0)))
       case AbstractInsnNode.IINC_INSN => new IincInsnNode(args(0).toInt, args(1).toInt)
       case AbstractInsnNode.LABEL => ???
-      case AbstractInsnNode.TABLESWITCH_INSN => {
+      case AbstractInsnNode.TABLESWITCH_INSN =>
         val (labelMap, default) = parseSwitchInsn(args)
 
         var min = -1
@@ -109,8 +108,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
         }
 
         new TableSwitchInsnNode(min, min + labels.length - 1, default, labels: _*)
-      }
-      case AbstractInsnNode.LOOKUPSWITCH_INSN => {
+      case AbstractInsnNode.LOOKUPSWITCH_INSN =>
         val (labelMap, default) = parseSwitchInsn(args)
 
         val keys = new Array[Int](labelMap.size())
@@ -130,7 +128,6 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
         }
 
         new LookupSwitchInsnNode(default, keys, labels)
-      }
       case AbstractInsnNode.MULTIANEWARRAY_INSN => new MultiANewArrayInsnNode(args(0), args(1).toInt)
     }
   }
@@ -140,12 +137,12 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
    */
   private def castLdcArg(arg: String): Any = arg.toLowerCase match {
     case arg @ "*" => null
-    case arg if (arg.startsWith("\"") && arg.endsWith("\"")) => arg.drop(1).dropRight(1) //unused (use string map)
-    case arg if (arg.endsWith("s")) => strings.get(arg.dropRight(1).toInt)
-    case arg if (arg.endsWith("l")) => arg.dropRight(1).toLong
-    case arg if (arg.endsWith("f")) => arg.dropRight(1).toFloat
-    case arg if (arg.endsWith("d")) => arg.dropRight(1).toDouble
-    case arg if (arg.contains(".")) => arg.toDouble
+    case arg if arg.startsWith("\"") && arg.endsWith("\"") => arg.drop(1).dropRight(1) //unused (use string map)
+    case arg if arg.endsWith("s") => strings.get(arg.dropRight(1).toInt)
+    case arg if arg.endsWith("l") => arg.dropRight(1).toLong
+    case arg if arg.endsWith("f") => arg.dropRight(1).toFloat
+    case arg if arg.endsWith("d") => arg.dropRight(1).toDouble
+    case arg if arg.contains(".") => arg.toDouble
     case arg => println(arg) //arg.toInt
   }
 
@@ -161,7 +158,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
       if (i + 1 >= args.length) throw new IllegalArgumentException("Missing default label!")
       args(i).toLowerCase match {
         case "default" => default = parseLabel(args(i + 1))
-        case value if (value.matches("-?\\d+")) => labels.put(value.toInt, parseLabel(args(i + 1)))
+        case value if value.matches("-?\\d+") => labels.put(value.toInt, parseLabel(args(i + 1)))
       }
       i += 2
     }
@@ -209,7 +206,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
            | AbstractInsnNode.MULTIANEWARRAY_INSN
            | AbstractInsnNode.IINC_INSN => 2
       case AbstractInsnNode.INVOKE_DYNAMIC_INSN => ???
-      case AbstractInsnNode.TABLESWITCH_INSN | AbstractInsnNode.LOOKUPSWITCH_INSN => {
+      case AbstractInsnNode.TABLESWITCH_INSN | AbstractInsnNode.LOOKUPSWITCH_INSN =>
         var i = 0
         while (i + 1 < args.length) {
           if (split(i).toLowerCase == "default") {
@@ -219,7 +216,6 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
           i += 1
         }
         throw new IllegalArgumentException(s"Missing default label: $args")
-      }
     }
   }
 }

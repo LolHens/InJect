@@ -143,7 +143,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     case arg if arg.endsWith("f") => arg.dropRight(1).toFloat
     case arg if arg.endsWith("d") => arg.dropRight(1).toDouble
     case arg if arg.contains(".") => arg.toDouble
-    case arg => println(arg) //arg.toInt
+    case arg => arg.toInt
   }
 
   /*

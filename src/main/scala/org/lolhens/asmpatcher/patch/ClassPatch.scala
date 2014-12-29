@@ -3,6 +3,7 @@ package org.lolhens.asmpatcher.patch
 import java.util
 
 import org.objectweb.asm.tree.ClassNode
+
 import scala.collection.JavaConversions._
 
 /**
@@ -20,9 +21,9 @@ class ClassPatch(val name: String) {
 
     for (methodPatch <- methodPatches) {
       var methodNode = for (methodNode <- classNode.methods) if (methodPatch)
-      if (methodNode.name == methodPatch.name) {
+        if (methodNode.name == methodPatch.name) {
 
-      }
+        }
     }
   }
 }

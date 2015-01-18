@@ -17,13 +17,13 @@ class ClassPatch(val name: String) {
   val methodPatches = new util.ArrayList[MethodPatch]()
 
   def patch(classNode: ClassNode) = {
-    classNode.access
+    //classNode.access
 
-    for (methodPatch <- methodPatches) {
+    /*for (methodPatch <- methodPatches) {
       var methodNode = for (methodNode <- classNode.methods) if (methodPatch)
         if (methodNode.name == methodPatch.name) {
 
         }
-    }
+    }*/
   }
 }

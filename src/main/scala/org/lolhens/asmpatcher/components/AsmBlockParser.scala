@@ -1,11 +1,11 @@
-package org.lolhens.asmpatcher.asmblock
+package org.lolhens.asmpatcher.components
 
 import java.util
 import java.util.Comparator
 import java.util.Map.Entry
 
 import org.lolhens.asmpatcher.Opcode
-import org.lolhens.asmpatcher.asmblock.AsmBlockParser._
+import org.lolhens.asmpatcher.components.AsmBlockParser._
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree._
 
@@ -136,7 +136,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
   Parses an ldc argument into the right class
    */
   private def castLdcArg(arg: String): Any = arg.toLowerCase match {
-    case arg @ "*" => null
+    case arg@"*" => null
     case arg if arg.startsWith("\"") && arg.endsWith("\"") => arg.drop(1).dropRight(1) //unused (use string map)
     case arg if arg.endsWith("s") => strings.get(arg.dropRight(1).toInt)
     case arg if arg.endsWith("l") => arg.dropRight(1).toLong

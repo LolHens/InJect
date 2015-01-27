@@ -1,4 +1,4 @@
-package org.lolhens.asmpatcher.test.testclasses;
+package org.lolhens.inject.test.testclasses;
 
 /**
  * Created by LolHens on 17.12.2014.

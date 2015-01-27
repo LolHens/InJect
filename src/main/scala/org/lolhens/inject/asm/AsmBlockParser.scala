@@ -1,15 +1,13 @@
-package org.lolhens.asmpatcher.asm
+package org.lolhens.inject.asm
 
 import java.util
 import java.util.Comparator
 import java.util.Map.Entry
 
-import org.lolhens.asmpatcher.Opcode
-import org.lolhens.asmpatcher.asm.AsmBlockParser._
+import org.lolhens.inject.Opcode
+import org.lolhens.inject.asm.AsmBlockParser._
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree._
-
-import scala.collection.JavaConversions._
 
 /**
  * Created by LolHens on 23.12.2014.

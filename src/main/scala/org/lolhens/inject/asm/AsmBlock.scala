@@ -1,12 +1,10 @@
-package org.lolhens.asmpatcher.asm
+package org.lolhens.inject.asm
 
 import java.util
 
 import org.objectweb.asm._
 import org.objectweb.asm.tree._
 import org.objectweb.asm.util._
-
-import scala.collection.JavaConversions._
 
 /**
  * Created by LolHens on 18.12.2014.

@@ -1,4 +1,4 @@
-package org.lolhens.asmpatcher.patch
+package org.lolhens.inject.patch
 
 import java.io.{BufferedReader, Reader}
 

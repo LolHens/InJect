@@ -1,8 +1,7 @@
-package org.lolhens.asmpatcher.patch
+package org.lolhens.inject.patch
 
 import java.util
 
-import org.lolhens.scala.function.JavaConversions._
 import org.objectweb.asm.tree.ClassNode
 
 /**

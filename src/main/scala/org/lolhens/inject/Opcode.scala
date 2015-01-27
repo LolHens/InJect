@@ -1,12 +1,10 @@
-package org.lolhens.asmpatcher
+package org.lolhens.inject
 
 import java.util
 
-import org.lolhens.asmpatcher.Opcode._
+import org.lolhens.inject.Opcode._
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree._
-
-import scala.collection.JavaConversions._
 
 /**
  * Created by LolHens on 14.12.2014.

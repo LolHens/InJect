@@ -1,7 +1,6 @@
 package org.lolhens.asmpatcher.test.test1
 
 import org.lolhens.asmpatcher.asm.AsmBlockParser
-import org.lolhens.asmpatcher.patch.ClassPatch
 
 /**
  * Created by LolHens on 17.12.2014.

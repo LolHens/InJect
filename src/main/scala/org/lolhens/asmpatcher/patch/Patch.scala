@@ -8,6 +8,6 @@ import org.objectweb.asm.tree.ClassNode
  */
 class Patch(condition: ClassNode => Boolean, patchType: ComponentType) {
   def patch(classNode: ClassNode) = {
-    
+
   }
 }

@@ -8,19 +8,22 @@ import java.io.{BufferedReader, Reader}
 class PatchReader(reader: Reader) {
   private val bufferedReader = new BufferedReader(reader)
   private var eof = false;
-  
+
   def read(): Patch = {
     val line = bufferedReader.readLine()
     if (line == null) {
       eof = true
-      return null;
+      return null
     }
+    val patch = new Patch(null, null)
+
+    patch
   }
-  
+
   def readAll(): PatchList = {
-    val patchList = new PatchList();
+    val patchList = new PatchList()
     while (!eof) {
-            
-    }    
+
+    }
   }
 }

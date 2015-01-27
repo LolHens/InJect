@@ -1,4 +1,4 @@
-package org.lolhens.asmpatcher.components
+package org.lolhens.asmpatcher.asm
 
 /**
  * Created by LolHens on 18.01.2015.

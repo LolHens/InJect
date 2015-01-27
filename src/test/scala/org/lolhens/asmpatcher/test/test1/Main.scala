@@ -1,6 +1,6 @@
 package org.lolhens.asmpatcher.test.test1
 
-import org.lolhens.asmpatcher.components.AsmBlockParser
+import org.lolhens.asmpatcher.asm.AsmBlockParser
 import org.lolhens.asmpatcher.patch.ClassPatch
 
 /**

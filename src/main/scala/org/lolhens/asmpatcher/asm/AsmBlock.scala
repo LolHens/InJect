@@ -1,4 +1,4 @@
-package org.lolhens.asmpatcher.components
+package org.lolhens.asmpatcher.asm
 
 import java.util
 

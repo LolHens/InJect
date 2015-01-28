@@ -6,7 +6,7 @@ package org.lolhens.inject.asm
 sealed trait ComponentType {
 }
 
-object Access {
+object ComponentType {
 
   final object Class extends ComponentType
 

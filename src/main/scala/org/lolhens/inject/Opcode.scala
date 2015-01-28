@@ -6,6 +6,8 @@ import org.lolhens.inject.Opcode._
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree._
 
+import scala.collection.JavaConversions._
+
 /**
  * Created by LolHens on 14.12.2014.
  */

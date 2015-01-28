@@ -9,6 +9,8 @@ import org.lolhens.inject.asm.AsmBlockParser._
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree._
 
+import scala.collection.JavaConversions._
+
 /**
  * Created by LolHens on 23.12.2014.
  */

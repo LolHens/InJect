@@ -25,5 +25,6 @@ class PatchReader(reader: Reader) {
     while (!eof) {
 
     }
+    null
   }
 }

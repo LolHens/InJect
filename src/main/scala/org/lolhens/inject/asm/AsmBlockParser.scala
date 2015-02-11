@@ -206,7 +206,8 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
            | AbstractInsnNode.MULTIANEWARRAY_INSN
            | AbstractInsnNode.IINC_INSN => 2
       case AbstractInsnNode.INVOKE_DYNAMIC_INSN => ???
-      case AbstractInsnNode.TABLESWITCH_INSN | AbstractInsnNode.LOOKUPSWITCH_INSN =>
+      case AbstractInsnNode.TABLESWITCH_INSN
+           | AbstractInsnNode.LOOKUPSWITCH_INSN =>
         var i = 0
         while (i + 1 < args.length) {
           if (split(i).toLowerCase == "default") {

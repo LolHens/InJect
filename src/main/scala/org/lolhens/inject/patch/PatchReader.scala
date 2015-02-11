@@ -15,7 +15,7 @@ class PatchReader(reader: Reader) {
       eof = true
       return null
     }
-    val patch = new Patch(null, null)
+    val patch = new Patch(null)
 
     patch
   }

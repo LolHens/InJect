@@ -5,7 +5,6 @@ import java.util.Comparator
 import java.util.Map.Entry
 
 import org.lolhens.inject.Instruction.Opcode
-import org.lolhens.inject.Opcode
 import org.lolhens.inject.asm.AsmBlockParser._
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree._
@@ -45,7 +44,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
 
     val opcode_args = forceSplit(insn, " ", 2)
     val opcode = Opcode(opcode_args(0))
-    if (opcode != null) return parseInsnArgs(opcode, opcode_args(1))
+    if (opcode != null) return parseInsnArgs(???, opcode_args(1))
 
     val labelNode = parseLabel(opcode_args(0))
     if (labelNode != null) return labelNode
@@ -194,7 +193,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     val args = reformatAsm(_args)
     val split = args.split(" ")
 
-    Opcode(insn).`type` match {
+    Opcode(insn).getOrElse(null).`type` match {
       case AbstractInsnNode.INSN
            | AbstractInsnNode.LABEL => 0
       case AbstractInsnNode.INT_INSN

@@ -9,8 +9,8 @@ object CompileWeaver {
   def main(args: Array[String]): Unit = {
 
   }
-  
+
   def run(path: Path): Unit = {
-    
+
   }
 }

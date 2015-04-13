@@ -1,6 +1,5 @@
 package org.lolhens.inject.patch
 
-import org.lolhens.inject.asm.ComponentType
 import org.objectweb.asm.tree.ClassNode
 
 /**

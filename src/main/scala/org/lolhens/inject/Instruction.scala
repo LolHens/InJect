@@ -55,7 +55,7 @@ object Instruction {
     override def toAbstractInsnNode = new FieldInsnNode(opcode.id, owner, name, desc)
   }
   abstract class METHOD_INSN(_opcode: _Opcode, val owner: String, val name: String, val desc: String, val interface: Boolean) extends Instruction(_opcode(AbstractInsnNode.METHOD_INSN)) {
-    override def toAbstractInsnNode = new MethodInsnNode(opcode.id, owner, name, desc, opcode == Opcodes.INVOKEINTERFACE)
+    override def toAbstractInsnNode = new MethodInsnNode(opcode.id, owner, name, desc, interface)
   }
   abstract class TYPE_INSN(_opcode: _Opcode, val desc: String) extends Instruction(_opcode(AbstractInsnNode.TYPE_INSN)) {
     override def toAbstractInsnNode = new TypeInsnNode(opcode.id, desc)

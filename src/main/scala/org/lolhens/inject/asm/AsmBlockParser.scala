@@ -4,6 +4,7 @@ import java.util
 import java.util.Comparator
 import java.util.Map.Entry
 
+import org.lolhens.inject.Instruction.Opcode
 import org.lolhens.inject.Opcode
 import org.lolhens.inject.asm.AsmBlockParser._
 import org.objectweb.asm.Opcodes
@@ -68,7 +69,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
   private def parseInsnArgs(opcode: Opcode, args: String): AbstractInsnNode = {
     val split = args.split(" ")
 
-    opcode.optype match {
+    opcode.`type` match {
       case AbstractInsnNode.FIELD_INSN
            | AbstractInsnNode.METHOD_INSN =>
         val owner_name = split(0).split("\\.")
@@ -82,15 +83,15 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
   Parses the already separated arguments for an instruction
    */
   private def parseSeparatedInsnArgs(opcode: Opcode, args: Array[String]): AbstractInsnNode = {
-    opcode.optype match {
-      case AbstractInsnNode.INSN => new InsnNode(opcode.opcode)
-      case AbstractInsnNode.INT_INSN => new IntInsnNode(opcode.opcode, args(0).toInt)
-      case AbstractInsnNode.VAR_INSN => new VarInsnNode(opcode.opcode, args(0).toInt)
-      case AbstractInsnNode.TYPE_INSN => new TypeInsnNode(opcode.opcode, args(0))
-      case AbstractInsnNode.FIELD_INSN => new FieldInsnNode(opcode.opcode, args(0), args(1), args(2))
-      case AbstractInsnNode.METHOD_INSN => new MethodInsnNode(opcode.opcode, args(0), args(1), args(2), opcode.opcode == Opcodes.INVOKEINTERFACE)
+    opcode.`type` match {
+      case AbstractInsnNode.INSN => new InsnNode(opcode.`type`)
+      case AbstractInsnNode.INT_INSN => new IntInsnNode(opcode.`type`, args(0).toInt)
+      case AbstractInsnNode.VAR_INSN => new VarInsnNode(opcode.`type`, args(0).toInt)
+      case AbstractInsnNode.TYPE_INSN => new TypeInsnNode(opcode.`type`, args(0))
+      case AbstractInsnNode.FIELD_INSN => new FieldInsnNode(opcode.`type`, args(0), args(1), args(2))
+      case AbstractInsnNode.METHOD_INSN => new MethodInsnNode(opcode.`type`, args(0), args(1), args(2), opcode.`type` == Opcodes.INVOKEINTERFACE)
       case AbstractInsnNode.INVOKE_DYNAMIC_INSN => ???
-      case AbstractInsnNode.JUMP_INSN => new JumpInsnNode(opcode.opcode, parseLabel(args(0)))
+      case AbstractInsnNode.JUMP_INSN => new JumpInsnNode(opcode.`type`, parseLabel(args(0)))
       case AbstractInsnNode.LDC_INSN => new LdcInsnNode(castLdcArg(args(0)))
       case AbstractInsnNode.IINC_INSN => new IincInsnNode(args(0).toInt, args(1).toInt)
       case AbstractInsnNode.LABEL => ???
@@ -193,7 +194,7 @@ class AsmBlockParser(val asmBlock: AsmBlock = new AsmBlock()) {
     val args = reformatAsm(_args)
     val split = args.split(" ")
 
-    Opcode(insn).optype match {
+    Opcode(insn).`type` match {
       case AbstractInsnNode.INSN
            | AbstractInsnNode.LABEL => 0
       case AbstractInsnNode.INT_INSN
